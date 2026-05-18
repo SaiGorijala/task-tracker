@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <h2>Admin Overview</h2>
+    <p class="muted">Track task health at a glance. Manage tasks in the <b>Tasks</b> section.</p>
+    <div class="hero-actions">
+      <a class="btn" href="{{ url_for('admin_tasks') }}">Go to Tasks</a>
+      <a class="btn secondary" href="{{ url_for('escalation_settings') }}">Escalation Settings</a>
+    </div>
+  </div>
+  <div class="hero-graphic" aria-hidden="true">
+    <div class="blob"></div>
+    <div class="mini-card">
+      <div class="mini-title">Escalations</div>
+      <div class="mini-value">{{ escalated_count }}</div>
+    </div>
+    <div class="mini-card">
+      <div class="mini-title">Overdue</div>
+      <div class="mini-value">{{ stats.get('Overdue', 0) }}</div>
+    </div>
+  </div>
+</section>
+
+<section class="kpi-grid">
+  <div class="kpi kpi-blue">
+    <div class="kpi-label">Open</div>
+    <div class="kpi-value">{{ stats.get('Open', 0) }}</div>
+  </div>
+  <div class="kpi kpi-amber">
+    <div class="kpi-label">Submitted</div>
+    <div class="kpi-value">{{ stats.get('Submitted', 0) }}</div>
+  </div>
+  <div class="kpi kpi-green">
+    <div class="kpi-label">Closed</div>
+    <div class="kpi-value">{{ stats.get('Closed', 0) }}</div>
+  </div>
+  <div class="kpi kpi-red">
+    <div class="kpi-label">Rejected</div>
+    <div class="kpi-value">{{ stats.get('Rejected', 0) }}</div>
+  </div>
+  <div class="kpi kpi-rose">
+    <div class="kpi-label">Overdue</div>
+    <div class="kpi-value">{{ stats.get('Overdue', 0) }}</div>
+  </div>
+  <div class="kpi kpi-slate">
+    <div class="kpi-label">Escalated</div>
+    <div class="kpi-value">{{ escalated_count }}</div>
+  </div>
+</section>
+{% endblock %}

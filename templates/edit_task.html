@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h2>Edit Task #{{ task.id }}</h2>
+  <form method="post" class="form-grid">
+    <label>Function</label>
+    <select name="function_name" required>
+      {% for fn in functions %}
+      <option value="{{ fn }}" {% if task.function_name == fn %}selected{% endif %}>{{ fn }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Sub-Function</label>
+    <select name="sub_function">
+      <option value="">N/A</option>
+      {% for sf in hr_sub_functions %}
+      <option value="{{ sf }}" {% if task.sub_function == sf %}selected{% endif %}>{{ sf }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Topic / Task Title</label>
+    <input type="text" name="topic" value="{{ task.topic }}" required>
+
+    <label>Responsible Person</label>
+    <select name="responsible_user_id" required>
+      {% for user in users %}
+      <option value="{{ user.id }}" {% if task.responsible_user_id == user.id %}selected{% endif %}>{{ user.name }} ({{ user.email }})</option>
+      {% endfor %}
+    </select>
+
+    <label>Target Date</label>
+    <input type="date" name="target_date" value="{{ task.target_date.strftime('%Y-%m-%d') }}" required>
+
+    <label>Periodicity</label>
+    <select name="periodicity" required>
+      {% for p in periodicities %}
+      <option value="{{ p }}" {% if task.periodicity == p %}selected{% endif %}>{{ p }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit">Update Task</button>
+  </form>
+</section>
+{% endblock %}

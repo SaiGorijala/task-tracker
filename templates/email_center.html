@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <h2>Email Center</h2>
+    <p class="muted">When automation is OFF, emails are queued here so admin can edit and send.</p>
+  </div>
+  <div class="inline">
+    <form method="post" action="{{ url_for('send_motivation_batch') }}" class="inline">
+      <button type="submit" class="btn ghost">Send/Queue Motivation Emails</button>
+    </form>
+    <a class="btn secondary" href="{{ url_for('email_settings') }}">Email Settings</a>
+  </div>
+</section>
+
+<section class="card modern">
+  <div class="card-head">
+    <h3>Pending (review + send)</h3>
+    <div class="hint">{{ pending|length }} items</div>
+  </div>
+
+  {% if pending|length == 0 %}
+    <div class="muted">No pending emails.</div>
+  {% else %}
+    {% for e in pending %}
+      <div class="card" style="margin: 12px 0; padding: 14px;">
+        <div class="muted small">Event: <b>{{ e.event_type }}</b> · To: <b>{{ e.to_email }}</b> · Created: {{ e.created_at|datefmt('%d-%b %H:%M') }}</div>
+        <form method="post" action="{{ url_for('send_outbox_email', email_id=e.id) }}" class="form-grid">
+          <div>
+            <label>CC (comma-separated)</label>
+            <input type="text" name="cc_emails" value="{{ e.cc_emails }}" placeholder="manager@company.com, head@company.com">
+          </div>
+          <div>
+            <label>Subject</label>
+            <input type="text" name="subject" value="{{ e.subject }}" required>
+          </div>
+          <div>
+            <label>Body</label>
+            <textarea name="body" rows="7" style="width:100%;">{{ e.body }}</textarea>
+          </div>
+          <div class="inline">
+            <button type="submit" class="btn">Send</button>
+          </div>
+        </form>
+      </div>
+    {% endfor %}
+  {% endif %}
+</section>
+
+<section class="card modern">
+  <div class="card-head">
+    <h3>Failed</h3>
+    <div class="hint">{{ failed|length }} items</div>
+  </div>
+  {% if failed|length == 0 %}
+    <div class="muted">No failed emails.</div>
+  {% else %}
+    <table class="table modern">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>To</th>
+          <th>Subject</th>
+          <th>Error</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in failed %}
+        <tr>
+          <td class="mono">#{{ e.id }}</td>
+          <td>{{ e.to_email }}</td>
+          <td>{{ e.subject }}</td>
+          <td class="muted small">{{ e.last_error }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</section>
+
+<section class="card modern">
+  <div class="card-head">
+    <h3>Recently sent</h3>
+    <div class="hint">{{ sent|length }} items</div>
+  </div>
+  {% if sent|length == 0 %}
+    <div class="muted">No sent emails yet.</div>
+  {% else %}
+    <table class="table modern">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Sent at</th>
+          <th>To</th>
+          <th>Subject</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in sent %}
+        <tr>
+          <td class="mono">#{{ e.id }}</td>
+          <td>{{ e.sent_at|datefmt('%d-%b %H:%M') }}</td>
+          <td>{{ e.to_email }}</td>
+          <td>{{ e.subject }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</section>
+{% endblock %}
+

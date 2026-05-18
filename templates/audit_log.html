@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h2>System Audit Trail</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Event</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+      <tr>
+        <td>{{ log.created_at|datefmt('%d-%b-%Y %H:%M') }}</td>
+        <td>{{ log.event }}</td>
+        <td>{{ log.details }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>Escalation Log</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Task</th>
+        <th>Level</th>
+        <th>Recipients</th>
+        <th>Message</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for e in escalations %}
+      <tr>
+        <td>{{ e.triggered_at|datefmt('%d-%b-%Y %H:%M') }}</td>
+        <td>#{{ e.task_id }}</td>
+        <td>{{ e.level }}</td>
+        <td>{{ e.recipients }}</td>
+        <td>{{ e.message }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <h2>Email Settings</h2>
+    <p class="muted">Manual by default. Turn on automation only when you want the system to send emails automatically.</p>
+  </div>
+</section>
+
+<section class="card modern">
+  <div class="card-head">
+    <h3>Automation</h3>
+    <div class="hint">Pending emails in outbox: <b>{{ pending }}</b></div>
+  </div>
+
+  <form method="post" class="form-grid two">
+    <div class="full">
+      <label>From email (optional; if empty, uses Gmail SMTP user)</label>
+      <input type="email" name="from_email" value="{{ settings.from_email }}" placeholder="yourname@gmail.com">
+    </div>
+
+    <div>
+      <label>Automated emails</label>
+      <input type="checkbox" name="automated_emails_enabled" {% if settings.automated_emails_enabled %}checked{% endif %}>
+      <div class="muted small">If off: emails are queued in Email Center for admin review/edit.</div>
+    </div>
+
+    <div>
+      <label>AI composer</label>
+      <input type="checkbox" name="ai_composer_enabled" {% if settings.ai_composer_enabled %}checked{% endif %}>
+      <div class="muted small">Generates subject/body based on task + user dashboard stats.</div>
+    </div>
+
+    <div class="full">
+      <label>Signature</label>
+      <input type="text" name="signature" value="{{ settings.signature }}" placeholder="— Task Tracking Portal">
+    </div>
+
+    <div class="full">
+      <button type="submit" class="btn">Save</button>
+      <a class="btn secondary" href="{{ url_for('email_center') }}">Open Email Center</a>
+    </div>
+  </form>
+</section>
+
+<section class="card modern">
+  <div class="card-head">
+    <h3>Gmail SMTP configuration</h3>
+    <div class="hint">Set environment variables (recommended)</div>
+  </div>
+  <div class="muted small">
+    Required:
+    <div class="mono">GMAIL_SMTP_USER</div>
+    <div class="mono">GMAIL_SMTP_APP_PASSWORD</div>
+    Optional:
+    <div class="mono">GMAIL_SMTP_HOST (default smtp.gmail.com)</div>
+    <div class="mono">GMAIL_SMTP_PORT (default 587)</div>
+  </div>
+</section>
+{% endblock %}
+

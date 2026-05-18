@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <h2>My Tasks</h2>
+    <p class="muted">Only tasks assigned to you appear here.</p>
+  </div>
+</section>
+
+<section class="card modern">
+  <div class="table-wrap">
+    <table class="table modern">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Function</th>
+          <th>Topic</th>
+          <th>Target</th>
+          <th>Periodicity</th>
+          <th>Status</th>
+          <th class="right">Submit evidence</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+        <tr>
+          <td class="mono">#{{ task.id }}</td>
+          <td>{{ task.function_name }}{% if task.sub_function %}<span class="muted"> / {{ task.sub_function }}</span>{% endif %}</td>
+          <td>{{ task.topic }}</td>
+          <td>{{ task.target_date|datefmt }}</td>
+          <td>{{ task.periodicity }}</td>
+          <td><span class="pill {{ task.status|lower }}">{{ task.status }}</span></td>
+          <td class="right">
+            {% if task.status in ['Open', 'Rejected', 'Overdue'] %}
+            <form method="post" action="{{ url_for('submit_task', task_id=task.id) }}" enctype="multipart/form-data" class="inline">
+              <input type="file" name="evidence_file" required class="input compact">
+              <button type="submit" class="btn ghost">Submit</button>
+            </form>
+            {% else %}
+            <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

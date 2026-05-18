@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <h2>Users</h2>
+    <p class="muted">Create users with auto-generated temporary passwords. Users must change password on first login.</p>
+  </div>
+  <form method="post" action="{{ url_for('admin_purge_users') }}">
+    <button type="submit" class="btn ghost danger">Delete all non-admin users</button>
+  </form>
+</section>
+
+<section class="card modern">
+  <div class="card-head">
+    <h3>Add user</h3>
+    <div class="hint">Credentials email is queued/sent based on Email Settings.</div>
+  </div>
+
+  <form method="post" action="{{ url_for('admin_create_user') }}" enctype="multipart/form-data" class="form-grid two">
+    <div>
+      <label>Name</label>
+      <input type="text" name="name" required>
+    </div>
+    <div>
+      <label>Email</label>
+      <input type="email" name="email" required>
+    </div>
+    <div>
+      <label>Role</label>
+      <select name="role">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <div>
+      <label>Function (optional)</label>
+      <select name="function_name">
+        <option value="">—</option>
+        {% for fn in functions %}
+        <option value="{{ fn }}">{{ fn }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>DOB (optional)</label>
+      <input type="date" name="dob">
+    </div>
+    <div>
+      <label>Phone (optional)</label>
+      <input type="text" name="phone" placeholder="+91...">
+    </div>
+    <div>
+      <label>Reporting manager email (optional)</label>
+      <input type="email" name="reporting_manager_email" placeholder="manager@company.com">
+    </div>
+    <div>
+      <label>Function head email (optional)</label>
+      <input type="email" name="function_head_email" placeholder="head@company.com">
+    </div>
+    <div class="full">
+      <label>Photo (optional)</label>
+      <input type="file" name="photo" accept="image/*">
+    </div>
+    <div class="full">
+      <button type="submit" class="btn">Create user</button>
+    </div>
+  </form>
+</section>
+
+<section class="card modern">
+  <div class="card-head">
+    <h3>All users</h3>
+    <div class="hint">{{ users|length }} total</div>
+  </div>
+  <div class="table-wrap">
+    <table class="table modern">
+      <thead>
+        <tr>
+          <th>Photo</th>
+          <th>Name</th>
+          <th>DOB</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Role</th>
+          <th>Function</th>
+          <th class="right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>
+            {% if u.profile and u.profile.photo_filename %}
+              <img src="{{ url_for('profile_photo', filename=u.profile.photo_filename) }}" alt="photo" style="width:38px;height:38px;border-radius:12px;object-fit:cover;border:1px solid rgba(148,163,184,0.22);">
+            {% else %}
+              <div class="logo" style="width:38px;height:38px;border-radius:12px;">{{ (u.name[:1] if u.name else 'U')|upper }}</div>
+            {% endif %}
+          </td>
+          <td>{{ u.name }}</td>
+          <td>{{ (u.profile.dob|datefmt) if u.profile and u.profile.dob else "-" }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.profile.phone if u.profile and u.profile.phone else "-" }}</td>
+          <td><span class="pill {{ u.role }}">{{ u.role }}</span></td>
+          <td>{{ u.function_name or "-" }}</td>
+          <td class="right">
+            {% if u.role != 'admin' %}
+            <form method="post" action="{{ url_for('admin_delete_user', user_id=u.id) }}">
+              <button type="submit" class="btn ghost danger">Delete</button>
+            </form>
+            {% else %}
+            <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
+

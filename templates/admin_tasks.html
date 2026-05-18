@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <h2>Tasks</h2>
+    <p class="muted">Create, review, and manage all tasks.</p>
+  </div>
+</section>
+
+<section class="card modern">
+  <div class="card-head">
+    <h3>Create task</h3>
+    <div class="hint">Notification email is sent to the responsible user.</div>
+  </div>
+  <form method="post" action="{{ url_for('create_task') }}" class="form-grid two">
+    <div>
+      <label>Function</label>
+      <select name="function_name" required>
+        {% for fn in functions %}
+        <option value="{{ fn }}">{{ fn }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label>Sub-Function (for HR)</label>
+      <select name="sub_function">
+        <option value="">N/A</option>
+        {% for sf in hr_sub_functions %}
+        <option value="{{ sf }}">{{ sf }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="full">
+      <label>Topic / Task Title</label>
+      <input type="text" name="topic" placeholder="e.g., Vendor onboarding evidence for April" required>
+    </div>
+
+    <div>
+      <label>Responsible Person</label>
+      <select name="responsible_user_id" required>
+        {% for user in users %}
+        <option value="{{ user.id }}">{{ user.name }} ({{ user.email }})</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label>Target Date</label>
+      <input type="date" name="target_date" required>
+    </div>
+
+    <div>
+      <label>Periodicity</label>
+      <select name="periodicity" required>
+        {% for p in periodicities %}
+        <option value="{{ p }}">{{ p }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="full">
+      <button type="submit" class="btn">Create task</button>
+    </div>
+  </form>
+</section>
+
+<section class="card modern">
+  <div class="card-head">
+    <h3>All tasks</h3>
+    <div class="hint">Approve / reject is available when a task is <b>Submitted</b>.</div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table modern">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Function</th>
+          <th>Topic</th>
+          <th>Responsible</th>
+          <th>Target</th>
+          <th>Periodicity</th>
+          <th>Status</th>
+          <th class="right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+        <tr>
+          <td class="mono">#{{ task.id }}</td>
+          <td>{{ task.function_name }}{% if task.sub_function %}<span class="muted"> / {{ task.sub_function }}</span>{% endif %}</td>
+          <td>{{ task.topic }}</td>
+          <td>{{ task.responsible_user.name }}<div class="muted small">{{ task.responsible_user.email }}</div></td>
+          <td>{{ task.target_date|datefmt }}</td>
+          <td>{{ task.periodicity }}</td>
+          <td><span class="pill {{ task.status|lower }}">{{ task.status }}</span></td>
+          <td class="right actions">
+            <a class="link" href="{{ url_for('edit_task', task_id=task.id) }}">Edit</a>
+            <form method="post" action="{{ url_for('delete_task', task_id=task.id) }}" class="inline">
+              <button type="submit" class="btn ghost danger">Delete</button>
+            </form>
+
+            {% if task.status == 'Submitted' %}
+            <form method="post" action="{{ url_for('review_task', task_id=task.id) }}" class="inline">
+              <input type="hidden" name="action" value="approve">
+              <button type="submit" class="btn ghost">Approve</button>
+            </form>
+            <form method="post" action="{{ url_for('review_task', task_id=task.id) }}" class="inline">
+              <input type="hidden" name="action" value="reject">
+              <input type="text" name="comment" placeholder="Rejection comments" required class="input compact">
+              <button type="submit" class="btn ghost danger">Reject</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
+

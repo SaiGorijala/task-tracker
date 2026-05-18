@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h2>Escalation Matrix Settings</h2>
+  <form method="post" class="form-grid">
+    <label>Reminder 1 (days before due)</label>
+    <input type="number" name="reminder_days_1" value="{{ config.reminder_days_1 }}" required>
+
+    <label>Reminder 2 (days before due)</label>
+    <input type="number" name="reminder_days_2" value="{{ config.reminder_days_2 }}" required>
+
+    <label>Level 2 escalation delay (days after due)</label>
+    <input type="number" name="level_2_days" value="{{ config.level_2_days }}" required>
+
+    <label>Level 3 escalation delay (days after due)</label>
+    <input type="number" name="level_3_days" value="{{ config.level_3_days }}" required>
+
+    <label>Include Reporting Manager at L2</label>
+    <input type="checkbox" name="include_reporting_manager_l2" {% if config.include_reporting_manager_l2 %}checked{% endif %}>
+
+    <label>Include Function Head at L3</label>
+    <input type="checkbox" name="include_function_head_l3" {% if config.include_function_head_l3 %}checked{% endif %}>
+
+    <label>Extra recipients (comma-separated emails)</label>
+    <input type="text" name="extra_recipients" value="{{ config.extra_recipients }}">
+
+    <button type="submit">Save Settings</button>
+  </form>
+</section>
+{% endblock %}
